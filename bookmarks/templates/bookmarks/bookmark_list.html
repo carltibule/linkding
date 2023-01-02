@@ -71,6 +71,17 @@
                       class="btn btn-link btn-sm">Archive
               </button>
             {% endif %}
+            {% if bookmark.is_hidden %}
+              <button type="submit" name="unhide" value="{{ bookmark.id }}"
+                class="btn btn-link btn-sm">
+                  Unhide
+              </button>
+            {% else %}
+              <button type="submit" name="hide" value="{{ bookmark.id }}"
+                class="btn btn-link btn-sm">
+                  Hide
+              </button>
+            {% endif %}
             <button type="submit" name="remove" value="{{ bookmark.id }}"
                     class="btn btn-link btn-sm btn-confirmation">Remove
             </button>

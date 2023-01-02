@@ -9,7 +9,8 @@ from bookmarks.utils import unique
 
 def query_bookmarks(user: User, query_string: str) -> QuerySet:
     return _base_bookmarks_query(user, query_string) \
-        .filter(is_archived=False)
+        .filter(is_archived=False) \
+        .filter(is_hidden=False)
 
 
 def query_archived_bookmarks(user: User, query_string: str) -> QuerySet:
@@ -21,6 +22,11 @@ def query_shared_bookmarks(user: Optional[User], query_string: str) -> QuerySet:
     return _base_bookmarks_query(user, query_string) \
         .filter(shared=True) \
         .filter(owner__profile__enable_sharing=True)
+
+
+def query_hidden_bookmarks(user: User, query_string: str) -> QuerySet:
+    return _base_bookmarks_query(user, query_string) \
+        .filter(is_hidden=True)
 
 
 def _base_bookmarks_query(user: Optional[User], query_string: str) -> QuerySet:
@@ -83,6 +89,14 @@ def query_archived_bookmark_tags(user: User, query_string: str) -> QuerySet:
 
 def query_shared_bookmark_tags(user: Optional[User], query_string: str) -> QuerySet:
     bookmarks_query = query_shared_bookmarks(user, query_string)
+
+    query_set = Tag.objects.filter(bookmark__in=bookmarks_query)
+
+    return query_set.distinct()
+
+
+def query_hidden_bookmark_tags(user: Optional[User], query_string: str) -> QuerySet:
+    bookmarks_query = query_hidden_bookmarks(user, query_string)
 
     query_set = Tag.objects.filter(bookmark__in=bookmarks_query)
 

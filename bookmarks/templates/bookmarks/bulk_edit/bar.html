@@ -15,6 +15,15 @@
               title="Archive selected bookmarks">Archive
       </button>
     {% endif %}
+    {% if mode == 'hidden' %}
+      <button type="submit" name="bulk_unhide" class="btn btn-link btn-sm btn-confirmation"
+          title="Unhide selected bookmarks">Unhide
+      </button>
+    {% else %}
+      <button type="submit" name="bulk_hide" class="btn btn-link btn-sm btn-confirmation"
+          title="Hide selected bookmarks">Hide
+      </button>
+    {% endif %}
     <span class="text-sm text-gray-dark">•</span>
     <button type="submit" name="bulk_delete" class="btn btn-link btn-sm btn-confirmation"
             title="Delete selected bookmarks">Delete

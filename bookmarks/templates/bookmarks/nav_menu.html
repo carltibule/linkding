@@ -31,6 +31,9 @@
       <li>
         <a href="{% url 'bookmarks:index' %}?q=!untagged" class="btn btn-link">Untagged</a>
       </li>
+      <li>
+        <a href="{% url 'bookmarks:hidden' %}" class="btn btn-link">Hidden</a>
+      </li>
     </ul>
   </div>
   <a href="{% url 'bookmarks:settings.index' %}" class="btn btn-link">Settings</a>

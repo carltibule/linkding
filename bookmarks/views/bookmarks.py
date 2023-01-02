@@ -11,7 +11,8 @@ from django.urls import reverse
 from bookmarks import queries
 from bookmarks.models import Bookmark, BookmarkForm, BookmarkFilters, User, Tag, build_tag_string
 from bookmarks.services.bookmarks import create_bookmark, update_bookmark, archive_bookmark, archive_bookmarks, \
-    unarchive_bookmark, unarchive_bookmarks, delete_bookmarks, tag_bookmarks, untag_bookmarks
+    unarchive_bookmark, unarchive_bookmarks, delete_bookmarks, tag_bookmarks, untag_bookmarks, \
+    change_bookmark_hidden_flag, change_bookmarks_hidden_flag
 from bookmarks.utils import get_safe_return_url
 
 _default_page_size = 30
@@ -48,6 +49,16 @@ def shared(request):
     context = get_bookmark_view_context(request, filters, query_set, tags, base_url)
     context['users'] = users
     return render(request, 'bookmarks/shared.html', context)
+
+
+@login_required
+def hidden(request):
+    filters = BookmarkFilters(request)
+    query_set = queries.query_hidden_bookmarks(request.user, filters.query)
+    tags = queries.query_hidden_bookmark_tags(request.user, filters.query)
+    base_url= reverse('bookmarks:hidden')
+    context = get_bookmark_view_context(request, filters, query_set, tags, base_url)
+    return render(request, 'bookmarks/hidden.html', context)
 
 
 def _get_selected_tags(tags: QuerySet[Tag], query_string: str):
@@ -200,6 +211,24 @@ def unarchive(request, bookmark_id: int):
     unarchive_bookmark(bookmark)
 
 
+def hide(request, bookmark_id: int):
+    try:
+        bookmark = Bookmark.objects.get(pk=bookmark_id, owner=request.user)
+    except Bookmark.DoesNotExist:
+        raise Http404('Bookmark does not exist')
+    
+    change_bookmark_hidden_flag(bookmark, True)
+
+
+def unhide(request, bookmark_id: int):
+    try:
+        bookmark = Bookmark.objects.get(pk=bookmark_id, owner=request.user)
+    except Bookmark.DoesNotExist:
+        raise Http404('Bookmark does not exist')
+    
+    change_bookmark_hidden_flag(bookmark, False)
+
+
 def mark_as_read(request, bookmark_id: int):
     try:
         bookmark = Bookmark.objects.get(pk=bookmark_id, owner=request.user)
@@ -238,7 +267,17 @@ def action(request):
         bookmark_ids = request.POST.getlist('bookmark_id')
         tag_string = convert_tag_string(request.POST['bulk_tag_string'])
         untag_bookmarks(bookmark_ids, tag_string, request.user)
-
+    if 'hide' in request.POST:
+        hide(request, request.POST['hide'])
+    if 'unhide' in request.POST:
+        unhide(request, request.POST['unhide'])
+    if 'bulk_hide' in request.POST:
+        bookmark_ids = request.POST.getlist('bookmark_id')
+        change_bookmarks_hidden_flag(bookmark_ids, request.user, True)
+    if 'bulk_unhide' in request.POST:
+        bookmark_ids = request.POST.getlist('bookmark_id')
+        change_bookmarks_hidden_flag(bookmark_ids, request.user, False)
+        
     return_url = get_safe_return_url(request.GET.get('return_url'), reverse('bookmarks:index'))
     return HttpResponseRedirect(return_url)
 

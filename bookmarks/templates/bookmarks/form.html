@@ -77,6 +77,16 @@
       Unread bookmarks can be filtered for, and marked as read after you had a chance to look at them.
     </div>
   </div>
+  <div class="form-group">
+    <label for="{{ form.is_hidden.id_for_label }}" class="form-checkbox">
+      {{ form.is_hidden }}
+      <i class="form-icon"></i>
+      <span>Mark as hidden</span>
+    </label>
+    <div class="form-input-hint">
+      Hidden bookmarks are not shown by default
+    </div>
+  </div>
   {% if request.user.profile.enable_sharing %}
     <div class="form-group">
       <label for="{{ form.shared.id_for_label }}" class="form-checkbox">

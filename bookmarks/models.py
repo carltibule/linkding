@@ -18,6 +18,7 @@ class Tag(models.Model):
     name = models.CharField(max_length=64)
     date_added = models.DateTimeField()
     owner = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
+    is_hidden=models.BooleanField(default=False)
 
     def __str__(self):
         return self.name
@@ -61,6 +62,7 @@ class Bookmark(models.Model):
     date_accessed = models.DateTimeField(blank=True, null=True)
     owner = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
     tags = models.ManyToManyField(Tag)
+    is_hidden=models.BooleanField(default=False)
 
     @property
     def resolved_title(self):
@@ -114,6 +116,7 @@ class BookmarkForm(forms.ModelForm):
             'unread',
             'shared',
             'auto_close',
+            'is_hidden'
         ]
 
 

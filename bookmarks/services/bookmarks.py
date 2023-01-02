@@ -87,6 +87,19 @@ def delete_bookmarks(bookmark_ids: [Union[int, str]], current_user: User):
     bookmarks.delete()
 
 
+def change_bookmark_hidden_flag(bookmark: Bookmark, is_hidden = False):
+    bookmark.is_hidden = is_hidden
+    bookmark.date_modified = timezone.now()
+    bookmark.save()
+    return bookmark
+
+
+def change_bookmarks_hidden_flag(bookmark_ids: [Union[int, str]], current_user: User, is_hidden = False):
+    sanitized_bookmark_ids = _sanitize_id_list(bookmark_ids)
+    bookmarks = Bookmark.objects.filter(owner=current_user, id__in=sanitized_bookmark_ids)
+    bookmarks.update(is_hidden=is_hidden, date_modified=timezone.now())
+
+    
 def tag_bookmarks(bookmark_ids: [Union[int, str]], tag_string: str, current_user: User):
     sanitized_bookmark_ids = _sanitize_id_list(bookmark_ids)
     bookmarks = Bookmark.objects.filter(owner=current_user, id__in=sanitized_bookmark_ids)
