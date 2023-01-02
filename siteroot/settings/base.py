@@ -84,8 +84,12 @@ WSGI_APPLICATION = 'siteroot.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'data', 'db.sqlite3'),
+        'ENGINE': os.getenv('DB_ENGINE', 'django.db.backends.sqlite3'),
+        'NAME': os.getenv('DB_NAME', os.path.join(BASE_DIR, 'data', 'db.sqlite3')),
+        'USER': os.getenv('DB_USER', None),
+        'PASSWORD': os.getenv('DB_PASSWORD', None),
+        'HOST': os.getenv('DB_HOST', None),
+        'PORT': os.getenv('DB_PORT', None)
     }
 }
 
