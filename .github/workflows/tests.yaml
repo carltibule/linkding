@@ -1,7 +1,12 @@
-name: linkding CI
+name: tests
+run-name: Running Tests
 
-on: [push]
-
+on:
+  workflow_call:
+  push:
+    branches-ignore:
+      - develop
+      - master
 jobs:
   run_tests:
     name: Run Django Tests
